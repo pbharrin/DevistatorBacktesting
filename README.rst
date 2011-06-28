@@ -7,7 +7,8 @@ The second point may not seem relevant but once you develop a strategy that look
 
 Features 
 ============
-A good backtest platform does it's best to remove unwanted bias, some forms of bias cannot be avoided in the code.  Look-ahead bias can be avoided with proper coding.  
+A good backtest platform does it's best to remove unwanted bias, some forms of bias cannot be avoided in the code.  Look-ahead bias can be avoided with proper coding.  This code demonstrates how to create a strategy class and then evaluate the strategy.  Bars are fed to the strategy class, this prevents the strategy class from having access to future price movement, therby removing look ahead bias.  
+The stratEval function calculates a number of performance metrics for the given strategy, and the given historical data.  The following are displayed in the  
 
 
 Execution
