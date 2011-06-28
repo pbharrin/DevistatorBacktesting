@@ -1,4 +1,4 @@
-//	This file parses a comma-delimited text file into a vector of time slices
+//	This is the main file that executes a strategy over historical data. 
 //
 //	To do:	[X] calc number of trades (how many times the pos vec changes sign)
 //			[X] calculate Sharpe Ratio
@@ -9,7 +9,6 @@
 #include <vector>
 #include <dirent.h>
 #include <time.h>
-#include "MovingAverageStrategy.h"
 #include "Strategy.h"
 #include "MomentumStrat2.h"
 #include "histTextLoad.h"
@@ -108,12 +107,11 @@ double calcStdDist(double totalReturns, double partStatSumSq, int numMins){
 	return sqrt(varSum/numMins);
 }
 
-double calcStd(double mean, double dailyRets[], int numDays)
-{
+//function for calculating standard deviation
+double calcStd(double mean, double dailyRets[], int numDays){
 	double var; 
 	double varSum = 0.0; 
-	for (int i=0; i<numDays; i++) 
-	{
+	for (int i=0; i<numDays; i++) {
 		var = dailyRets[i] - mean;
 		varSum += var * var;
 	}
@@ -122,18 +120,15 @@ double calcStd(double mean, double dailyRets[], int numDays)
 }
 // function for opeing directory
 //filters out ., and ..
-int getDir (string dir, vector<string> &files)
-{
+int getDir (string dir, vector<string> &files){
 	DIR *dp;
 	struct dirent *dirp;
-	if ((dp = opendir(dir.c_str())) == NULL )
-	{
+	if ((dp = opendir(dir.c_str())) == NULL ){
 		cout << "error opening directory: "<< dir <<endl;
 		return 0;
 	}
 	
-	while ((dirp = readdir(dp))!=NULL) 
-	{
+	while ((dirp = readdir(dp))!=NULL) {
 		string fileStr = string(dirp->d_name);
 		if ((strcmp(fileStr.c_str(),".") != 0) && (strcmp(fileStr.c_str(),"..") != 0))   files.push_back(fileStr);
 	}
