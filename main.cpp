@@ -10,11 +10,12 @@
 #include <dirent.h>
 #include <time.h>
 #include "Strategy.h"
-#include "MomentumStrat2.h"
+#include "MomentumStrat3.h"
 #include "histTextLoad.h"
 #include "stratEval.h"
 
 using namespace std;
+const int NUM_HOLDOUT_ITER = 1;
 
 int getDir (string dir, vector<string> &files);
 stratResu stratEval(Strategy * stratUnderTest, vector<timeSlice> testData, maxDDStore* maxDDPass);
@@ -25,7 +26,7 @@ double calcStdDist(double totalReturns, double partStatSumSq, int numMins);
 int main (int argc, char * const argv[]) 
 {
 	double sumReturns = 0;
-	for (int j=0; j < 10; j++)
+	for (int j=0; j < NUM_HOLDOUT_ITER; j++)
 	{
 		
 		vector <string> trainingSet = vector <string>();
@@ -43,7 +44,7 @@ int main (int argc, char * const argv[])
 		}
 
 		//loop over training set
-		MomentumStrat2 * myStrat;
+		MomentumStrat3 * myStrat;
 		stratResu myStratResults;
 		double retAfterTransCost, totalReturns = 0.0;
 		double returnArr[numFiles], mean, standDev, sharpeRatio, timeInMktSum = 0.0;
@@ -65,7 +66,7 @@ int main (int argc, char * const argv[])
 			sort(histData.begin(), histData.end(), timeSliceSortPred);
 			
 			//Third step: feed stream to strategy class 
-			myStrat = new MomentumStrat2(atoi(argv[1])); //1.8*0.1*j
+			myStrat = new MomentumStrat3(atof(argv[1]), atof(argv[2]), atof(argv[3]));
 			myStratResults = stratEval(myStrat, histData, &maxDDPass);
 
 			partStatN += myStratResults.partStatN;
@@ -94,10 +95,10 @@ int main (int argc, char * const argv[])
 		printf("percentage time in the mkt: %3f\n", timeInMktSum/numTradingDays);
 		printf("max draw down: %5f, maxDD time (min): %d\n", maxDDPass.maxDrawDown, maxDDPass.maxDDtime);//this is only the latest
 		printf("number of trades: %d\n", totalTrades);
-		cout << "total positive days: "<< posDays << " total negative days: " << negDays <<endl;
+		printf("total positive days: %d total negative days: %d\n", posDays, negDays);
 		sumReturns += retAfterTransCost;
 	}
-	cout << "after 10 iterations the avg return is: "<< sumReturns/10.0<<endl;
+	printf("after %d iterations the avg return is: %f\n",NUM_HOLDOUT_ITER, sumReturns/NUM_HOLDOUT_ITER);
 	return 0;
 }
 double calcStdDist(double totalReturns, double partStatSumSq, int numMins){
